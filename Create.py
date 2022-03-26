@@ -66,7 +66,7 @@ class Create(BaseCreate):
             ss = requests.session()
             ss.mount('https://', HTTPAdapter(max_retries=5))
             data = buffer.read(Create.__UPLOAD_CHUNK_SIZE)
-            r = ss.put(data=buffer, url=e.upload_url)
+            r = ss.put(data=data, url=e.upload_url)
             if r.status_code == 403:
                 part_info = self.get_upload_url(GetUploadUrlRequest(
                     drive_id=part_info.drive_id,
@@ -74,8 +74,8 @@ class Create(BaseCreate):
                     upload_id=part_info.upload_id,
                     part_info_list=[UploadPartInfo(part_number=i.part_number) for i in part_info.part_info_list]
                 ))
-                ss.put(data=buffer, url=e.upload_url)
-            progress_bar.update(len(buffer))
+                ss.put(data=data, url=e.upload_url)
+            progress_bar.update(len(data))
 
         progress_bar.close()
 
