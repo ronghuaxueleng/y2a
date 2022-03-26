@@ -41,7 +41,7 @@ class Create(BaseCreate):
         # 以10MB为一块: 10485760
         return [UploadPartInfo(part_number=i) for i in range(1, math.ceil(file_size / Create.__UPLOAD_CHUNK_SIZE) + 1)]
 
-    def _pre_hash(self, buffer: io.RawIOBase, file_size: int, name: str, parent_file_id='root', drive_id=None,
+    def _pre_hash(self, buffer: io.BufferedIOBase, file_size: int, name: str, parent_file_id='root', drive_id=None,
                   check_name_mode: CheckNameMode = 'auto_rename') -> CreateFileResponse:
         pre_hash = hashlib.sha1(buffer.read(1024)).hexdigest()
         body = CreateFileRequest(
@@ -58,7 +58,7 @@ class Create(BaseCreate):
         part_info = self._result(response, CreateFileResponse, [201, 409])
         return part_info
 
-    def _put_data(self, buffer: io.RawIOBase, part_info: CreateFileResponse, file_size: int) -> Union[BaseFile, Null]:
+    def _put_data(self, buffer: io.BufferedIOBase, part_info: CreateFileResponse, file_size: int) -> Union[BaseFile, Null]:
         """上传数据"""
         # llen = len(part_info.part_info_list)
         progress_bar = tqdm(total=file_size, unit='B', unit_scale=True, colour='#21d789')
@@ -127,7 +127,7 @@ class Create(BaseCreate):
             drive_id = self.default_drive_id
 
         file_size = video.filesize
-        buffer = io.RawIOBase()
+        buffer = io.BufferedIOBase()
         video.stream_to_raw(buffer)
         buffer.seek(0)
 

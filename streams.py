@@ -1,5 +1,5 @@
 import logging
-from io import RawIOBase
+from io import BufferedIOBase
 
 from pytube import Stream as StreamBase, request
 
@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class Stream(StreamBase):
-    def stream_to_raw(self, buffer: RawIOBase) -> None:
+    def stream_to_raw(self, buffer: BufferedIOBase) -> None:
         """Write the media stream to buffer
 
         :rtype: io.BytesIO buffer
@@ -27,7 +27,7 @@ class Stream(StreamBase):
         self.on_complete(None)
 
     def on_progress_raw(
-        self, chunk: bytes, file_handler: RawIOBase, bytes_remaining: int
+        self, chunk: bytes, file_handler: BufferedIOBase, bytes_remaining: int
     ):
         """On progress callback function.
 
@@ -48,7 +48,7 @@ class Stream(StreamBase):
         :rtype: None
 
         """
-        file_handler.write(chunk)
+        file_handler.raw.write(chunk)
         logger.debug("download remaining: %s", bytes_remaining)
         if self._monostate.on_progress:
             self._monostate.on_progress(self, chunk, bytes_remaining)
