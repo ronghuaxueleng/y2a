@@ -89,11 +89,6 @@ class Create(BaseCreate):
         self._auth.log.info(f'文件上传完成 {part_info.file_name}')
         return complete
 
-    def upload_file_from_youtube_with_proxy(self, url: str, parent_file_id: str = 'root', proxies=None):
-        if proxies is None:
-            proxies = {}
-        self.upload_file_from_youtube(url, parent_file_id, None, None, "auto_rename", proxies)
-
     def upload_file_from_youtube(
             self,
             url: str,

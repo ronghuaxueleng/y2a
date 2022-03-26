@@ -1,0 +1,20 @@
+name: 从YouTube下载文件到阿里云盘
+on:
+  workflow_dispatch:
+jobs:
+  downloader:
+    name: 下载文件
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: '安装python环境'
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: '开始下载'
+        run: |
+          pip install -r requirements.txt
+          python3 main.py
