@@ -19,6 +19,8 @@ class Stream(StreamBase):
 
         request.stream(self.url)
 
+        print(self.url)
+
         for chunk in request.stream(self.url):
             # reduce the (bytes) remainder by the length of the chunk.
             bytes_remaining -= len(chunk)
