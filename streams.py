@@ -48,7 +48,7 @@ class Stream(StreamBase):
         :rtype: None
 
         """
-        file_handler.raw.write(chunk)
+        file_handler.write(chunk)
         logger.debug("download remaining: %s", bytes_remaining)
         if self._monostate.on_progress:
             self._monostate.on_progress(self, chunk, bytes_remaining)
