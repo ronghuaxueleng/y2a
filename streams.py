@@ -7,6 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class Stream(StreamBase):
-    def stream_to_raw(self, proxies) -> None:
+    def stream_to_raw(self, proxies) -> bytes:
         response = requests.get(self.url, proxies=proxies, stream=True)
-        return response.raw
+        return response.content
