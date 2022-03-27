@@ -11,7 +11,7 @@ from aligo.request import *
 from aligo.response import *
 from aligo.types import *
 from aligo.types.Enum import *
-from pytube import YouTube
+from Youtube import YouTube
 from requests.adapters import HTTPAdapter
 from tqdm import tqdm
 
@@ -126,10 +126,8 @@ class Create(BaseCreate):
         if drive_id is None:
             drive_id = self.default_drive_id
 
-        buffer = io.RawIOBase()
         file_size = video.filesize
-        video.stream_to_buffer(buffer)
-        buffer.seek(0)
+        buffer = video.stream_to_buffer(proxies)
         bufferedReader = io.BufferedReader(buffer)
 
         # 动态调整 _UPLOAD_CHUNK_SIZE
