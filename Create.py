@@ -11,7 +11,7 @@ from aligo.request import *
 from aligo.response import *
 from aligo.types import *
 from aligo.types.Enum import *
-from Youtube import YouTube
+from pytube import YouTube
 from requests.adapters import HTTPAdapter
 from tqdm import tqdm
 
