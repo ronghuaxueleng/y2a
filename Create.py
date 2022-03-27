@@ -127,7 +127,7 @@ class Create(BaseCreate):
             drive_id = self.default_drive_id
 
         file_size = video.filesize
-        buffer = video.stream_to_buffer(proxies)
+        buffer = video.stream_to_raw(proxies)
         bufferedReader = io.BufferedReader(buffer)
 
         # 动态调整 _UPLOAD_CHUNK_SIZE
