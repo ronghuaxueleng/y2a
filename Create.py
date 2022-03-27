@@ -41,7 +41,7 @@ class Create(BaseCreate):
         # 以10MB为一块: 10485760
         return [UploadPartInfo(part_number=i) for i in range(1, math.ceil(file_size / Create.__UPLOAD_CHUNK_SIZE) + 1)]
 
-    def _pre_hash(self, buffer: io.BufferedIOBase, file_size: int, name: str, parent_file_id='root', drive_id=None,
+    def _pre_hash(self, buffer: io.BufferedReader, file_size: int, name: str, parent_file_id='root', drive_id=None,
                   check_name_mode: CheckNameMode = 'auto_rename') -> CreateFileResponse:
         pre_hash = hashlib.sha1(buffer.read(1024)).hexdigest()
         body = CreateFileRequest(
@@ -58,7 +58,7 @@ class Create(BaseCreate):
         part_info = self._result(response, CreateFileResponse, [201, 409])
         return part_info
 
-    def _put_data(self, buffer: any, part_info: CreateFileResponse, file_size: int) -> Union[BaseFile, Null]:
+    def _put_data(self, buffer: io.BufferedReader, part_info: CreateFileResponse, file_size: int) -> Union[BaseFile, Null]:
         """上传数据"""
         # llen = len(part_info.part_info_list)
         progress_bar = tqdm(total=file_size, unit='B', unit_scale=True, colour='#21d789')
@@ -126,8 +126,11 @@ class Create(BaseCreate):
         if drive_id is None:
             drive_id = self.default_drive_id
 
+        buffer = io.RawIOBase()
         file_size = video.filesize
-        buffer = video.stream_to_raw(proxies)
+        video.stream_to_buffer(buffer)
+        buffer.seek(0)
+        bufferedReader = io.BufferedReader(buffer)
 
         # 动态调整 _UPLOAD_CHUNK_SIZE
         if Create._UPLOAD_CHUNK_SIZE is None:
@@ -141,7 +144,7 @@ class Create(BaseCreate):
             else:
                 Create.__UPLOAD_CHUNK_SIZE = 268435456  # 256 MB
 
-        part_info = self._pre_hash(buffer=buffer, file_size=file_size, name=name,
+        part_info = self._pre_hash(buffer=bufferedReader, file_size=file_size, name=name,
                                    parent_file_id=parent_file_id, drive_id=drive_id,
                                    check_name_mode=check_name_mode)
         # exists=True
@@ -150,4 +153,4 @@ class Create(BaseCreate):
             # return self.get_file(GetFileRequest(file_id=part_info.file_id))
             return part_info
 
-        return self._put_data(buffer, part_info, file_size)
+        return self._put_data(bufferedReader, part_info, file_size)
